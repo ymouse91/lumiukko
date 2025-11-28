@@ -1,5 +1,4 @@
 [
-
   {
     "id": 1764325615820,
     "name": "1 - 4",
@@ -24,7 +23,7 @@
     "level": "expert",
     "grid": "booos\nhohoo\nooooo\noosob"
   },
-    {
+  {
     "id": 1764262808880,
     "name": "53 - 17",
     "level": "master",
@@ -35,5 +34,89 @@
     "name": "69 - 25",
     "level": "wizard",
     "grid": "bohhb\nskooo\noookh\nbooss"
+  },
+  {
+    "id": 1764343583127,
+    "name": "3 - 4",
+    "level": "starter",
+    "grid": "koobo\noooso\nooooh\nokooo"
+  },
+  {
+    "id": 1764343608230,
+    "name": "4 - 4",
+    "level": "starter",
+    "grid": "kooos\nooooo\nooooo\nhooob"
+  },
+  {
+    "id": 1764343664109,
+    "name": "5 - 6",
+    "level": "starter",
+    "grid": "kokok\noohoo\nooooo\nsooob"
+  },
+  {
+    "id": 1764343724608,
+    "name": "6 - 6",
+    "level": "starter",
+    "grid": "ookoo\nhsobo\nooooo\nookoo"
+  },
+  {
+    "id": 1764343757312,
+    "name": "7 - 7",
+    "level": "starter",
+    "grid": "ooooo\nokkoo\nooooh\nsoboo"
+  },
+  {
+    "id": 1764343777702,
+    "name": "Nimetön pulma",
+    "level": "starter",
+    "grid": "okosb\nooook\nooooo\noohoo"
+  },
+  {
+    "id": 1764343813130,
+    "name": "9 - 7",
+    "level": "starter",
+    "grid": "kosoo\noooho\nooooo\nobook"
+  },
+  {
+    "id": 1764343841045,
+    "name": "10 - 7",
+    "level": "starter",
+    "grid": "kokoo\nokooo\noooho\noosob"
+  },
+  {
+    "id": 1764343875471,
+    "name": "11 - 7",
+    "level": "starter",
+    "grid": "kkoho\nooooo\nsoook\nboooo"
+  },
+  {
+    "id": 1764343910862,
+    "name": "12 - 7",
+    "level": "starter",
+    "grid": "kbook\nooooo\nohoso\nooooo"
+  },
+  {
+    "id": 1764343932607,
+    "name": "13 - 9",
+    "level": "starter",
+    "grid": "kosoo\nooooh\nokooo\noooob"
+  },
+  {
+    "id": 1764343956863,
+    "name": "14 - 9",
+    "level": "starter",
+    "grid": "okooo\noooko\nsoooo\noohob"
+  },
+  {
+    "id": 1764343987775,
+    "name": "15 - 9",
+    "level": "starter",
+    "grid": "kkoos\nooooh\nboooo\nookoo"
+  },
+  {
+    "id": 1764344025782,
+    "name": "16 - 10",
+    "level": "starter",
+    "grid": "kkooo\nooooh\nsoooo\nbkooo"
   }
 ]
