@@ -60,7 +60,7 @@ h1{
         .cell.selected{border:3px solid #6b6bff;box-shadow:0 0 15px #6b6bff;transform:scale(1.05);}
 
         .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:15px;}
-        button{padding:12px 24px;border-radius:20px;font-weight:bold;border:none;cursor:pointer; font-size: 18px;}
+        button{padding:12px 24px;border-radius:20px;font-weight:bold;border:none;cursor:pointer; font-size: 18px;margin-bottom:10px;}
         .btn-reset{background:#ff6b6b;color:white;}
         .btn-undo{background:#4ecdc4;color:white;}
         .btn-hint{background:#ffd93d;}
@@ -141,10 +141,10 @@ only screen
 <body>
 <div class="game-container">
     <h1 id="title">⛄ LUMIUKKO ⛄</h1>
-    <div class="info">Liu'uta palloja kohti esteitä ja rakenna lumiukko</div>
+   <!--  <div class="info">Liu'uta palloja kohti esteitä ja rakenna lumiukko</div> -->
 
     <div class="puzzle-selector">
-        <label for="levelSelect">Taso:</label>
+        <label for="levelSelect" style="display:none">Taso:</label>
         <select id="levelSelect">
             <option value="starter">Aloittelija</option>
             <option value="junior" selected>Juniori</option>
