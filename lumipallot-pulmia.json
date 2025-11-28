@@ -118,5 +118,191 @@
     "name": "16 - 10",
     "level": "starter",
     "grid": "kkooo\nooooh\nsoooo\nbkooo"
+  },
+  {
+    "id": 1764356668867,
+    "name": "17 -12",
+    "level": "junior",
+    "grid": "okooo\nooook\nkooso\nooohb"
+  },
+  {
+    "id": 1764356677507,
+    "name": "18 - 10",
+    "level": "junior",
+    "grid": "ooksb\nkoooo\noooko\nohooo"
+  },
+  {
+    "id": 1764356684408,
+    "name": "19 - 12",
+    "level": "junior",
+    "grid": "ookos\nkoook\nohooo\nooobo"
+  },
+  {
+    "id": 1764356696205,
+    "name": "20 - 11",
+    "level": "junior",
+    "grid": "okooo\noooho\nboooo\nookos"
+  },
+  {
+    "id": 1764356342374,
+    "name": "21 - 11",
+    "level": "junior",
+    "grid": "oooho\nkoooo\nooook\nsoboo"
+  },
+  {
+    "id": 1764356372634,
+    "name": "22 - 11",
+    "level": "junior",
+    "grid": "okoso\nkoooo\nhoooo\nookob"
+  },
+  {
+    "id": 1764356399415,
+    "name": "23 - 13",
+    "level": "junior",
+    "grid": "ookoo\nkoooh\nokooo\nbooos"
+  },
+  {
+    "id": 1764356432251,
+    "name": "24 - 12",
+    "level": "junior",
+    "grid": "oohoo\nkoook\nokooo\nosoob"
+  },
+  {
+    "id": 1764356471524,
+    "name": "25 - 12",
+    "level": "junior",
+    "grid": "kokos\nooooo\noooho\nbkooo"
+  },
+  {
+    "id": 1764356497730,
+    "name": "26 - 12",
+    "level": "junior",
+    "grid": "koboo\nooook\nkoooo\nsooho"
+  },
+  {
+    "id": 1764356528494,
+    "name": "27 - 18",
+    "level": "junior",
+    "grid": "okoos\nooook\nhoooo\nookbo"
+  },
+  {
+    "id": 1764356557830,
+    "name": "28 - 11",
+    "level": "junior",
+    "grid": "koooo\nooook\nsoooo\nbooho"
+  },
+  {
+    "id": 1764356782009,
+    "name": "29 - 8",
+    "level": "expert",
+    "grid": "ooooo\nohoho\nbsosb\nooooo"
+  },
+  {
+    "id": 1764356787627,
+    "name": "30 - 10 ",
+    "level": "expert",
+    "grid": "hokos\nboooo\noooso\nhbkoo"
+  },
+  {
+    "id": 1764356816403,
+    "name": "31 - 11",
+    "level": "expert",
+    "grid": "bohob\nkohoo\noooos\noosoo"
+  },
+  {
+    "id": 1764356845534,
+    "name": "32 - 12",
+    "level": "expert",
+    "grid": "oohob\nokoho\nookoo\nsobos"
+  },
+  {
+    "id": 1764356893245,
+    "name": "34 - 13",
+    "level": "expert",
+    "grid": "bohsb\nkoooo\nkooho\noooso"
+  },
+  {
+    "id": 1764356927685,
+    "name": "35 - 10",
+    "level": "expert",
+    "grid": "kokbh\nooooo\noooos\nbsoho"
+  },
+  {
+    "id": 1764356952988,
+    "name": "36 - 11",
+    "level": "expert",
+    "grid": "bohos\nhkooo\nookoo\nbooos"
+  },
+  {
+    "id": 1764356990286,
+    "name": "37 - 11",
+    "level": "expert",
+    "grid": "hobos\nokoho\noooko\nbosoo"
+  },
+  {
+    "id": 1764357020876,
+    "name": "38 - 10",
+    "level": "expert",
+    "grid": "bboso\nkhohk\nooooo\noosoo"
+  },
+  {
+    "id": 1764357089528,
+    "name": "40 - 9",
+    "level": "expert",
+    "grid": "hobos\nokoho\noooko\nbosoo"
+  },
+  {
+    "id": 1764357126309,
+    "name": "39 - 10",
+    "level": "expert",
+    "grid": "hoobo\nsokoo\noooos\nbohoo"
+  },
+  {
+    "id": 1764357164366,
+    "name": "41 - 11",
+    "level": "expert",
+    "grid": "booos\noohoo\nsohoo\nboooo"
+  },
+  {
+    "id": 1764357187122,
+    "name": "42 - 12",
+    "level": "expert",
+    "grid": "booos\nohooo\nbohos\nooooo"
+  },
+  {
+    "id": 1764357220006,
+    "name": "43 - 12",
+    "level": "expert",
+    "grid": "shkos\nooooo\nooooo\nbohob"
+  },
+  {
+    "id": 1764357246311,
+    "name": "44 - 10",
+    "level": "expert",
+    "grid": "oooob\nokhko\noohoo\nsoobs"
+  },
+  {
+    "id": 1764357283236,
+    "name": "45 - 14",
+    "level": "expert",
+    "grid": "okooo\nsosoh\nohoko\nbooob"
+  },
+  {
+    "id": 1764357316219,
+    "name": "46 - 10",
+    "level": "expert",
+    "grid": "bskbh\nooooo\nkhoos\nooooo"
+  },
+  {
+    "id": 1764357342376,
+    "name": "47 - 15",
+    "level": "expert",
+    "grid": "bohos\nokoks\nooooo\nhooob"
+  },
+  {
+    "id": 1764357381435,
+    "name": "48 - 15",
+    "level": "expert",
+    "grid": "okoob\nosook\nooooo\nohshb"
   }
 ]
