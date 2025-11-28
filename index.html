@@ -513,7 +513,7 @@ ooooo`);
 // === Service Worker registration (ADDED) ===
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('sw.js').catch(function(e){
+    navigator.serviceWorker.register('service-worker.js').catch(function(e){
       console && console.warn && console.warn('SW reg failed', e);
     });
   });
