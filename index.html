@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	  		<!-- iOS PWA -liput -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+<!-- Yleinen väriteema (safari, android ym.) -->
+<meta name="theme-color" content="#60A5FA">
+
+<!-- Web manifesti (nimi voi olla myös manifest.json, jos niin olet tehnyt) -->
+<link rel="manifest" href="manifest.json">
+
+<!-- iOS:lle pitää olla erikseen apple-touch-icon -->
+<link rel="apple-touch-icon" sizes="192x192" href="./hsb.png">
+    <title>Lumiukko</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;-webkit-touch-callout:none;}
+        body{
+            font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;
+            min-height:100vh;background:linear-gradient(135deg,#667eea,#764ba2);padding:10px;
+        }
+        .game-container{
+            background:white;border-radius:15px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.3);
+            max-width:600px;width:100%;
+        }
+
+        .info{text-align:center;color:#666;margin-bottom:20px;font-size:14px;}
+
+h1{
+  margin: 0; font-size: 1.6rem; font-weight: 700; text-align:center;margin-bottom:10px;
+  background: linear-gradient(135deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+        .puzzle-selector{text-align:center;margin-bottom:20px;}
+        .puzzle-selector select{
+            padding:8px;border-radius:20px;border:2px solid #ddd;margin-right:10px;font-size:14px;
+        }
+        .puzzle-selector button{
+            padding:10px 16px;background:#667eea;color:white;border:none;border-radius:20px;font-weight:bold;
+        }
+
+        .board{
+            display:inline-grid;grid-template-columns:repeat(5,1fr);
+            gap:12px;padding:20px;background:#f0f0f0;border-radius:10px;width:100%;margin-bottom:20px;
+        }
+        .cell{
+            aspect-ratio:1;border:2px solid #ddd;border-radius:10px;display:flex;align-items:center;
+            justify-content:center;font-size:48px;cursor:grab;background:white;transition:0.2s;
+            position:relative;touch-action:none;overflow:hidden;
+        }
+        .cell img{width:85%;height:85%;object-fit:contain;pointer-events:none;}
+        .cell.empty{cursor:default;}
+        .cell.tree{background:#2d5016;cursor:default;}
+
+        .cell.selected{border:3px solid #6b6bff;box-shadow:0 0 15px #6b6bff;transform:scale(1.05);}
+
+        .controls{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:15px;}
+        button{padding:12px 24px;border-radius:20px;font-weight:bold;border:none;cursor:pointer;}
+        .btn-reset{background:#ff6b6b;color:white;}
+        .btn-undo{background:#4ecdc4;color:white;}
+        .btn-hint{background:#ffd93d;}
+
+        .status{
+            text-align:center;padding:15px;margin-bottom:15px;background:#f0f0f0;
+            border-radius:8px;font-weight:bold;min-height:50px;display:flex;
+            align-items:center;justify-content:center;color:#333;
+        }
+        .status.success{background:#90EE90;color:#155724;font-size:18px;}
+
+        .stats{text-align:center;color:#666;font-size:14px;margin-top:15px;}
+		
+		/* iPhone (kaikki mallit, pysty + vaaka) */
+@media only screen 
+  and (max-device-width: 430px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: portrait),
+only screen 
+  and (max-device-width: 430px)
+  and (-webkit-min-device-pixel-ratio: 2)
+  and (orientation: landscape) {
+
+    :root {
+        --cell: 42px;   /* säädä haluamasi mitat */
+    }
+
+    .game-container {
+        padding: 10px;
+    }
+
+    .board {
+        gap: 8px;
+        padding: 15px;
+    }
+}
+  /* —— iPad (kaikki mallit) VAaka-asento —— */
+@media only screen 
+    and (min-device-width: 768px)
+    and (max-device-width: 1366px)
+    and (orientation: landscape)
+    and (-webkit-min-device-pixel-ratio: 2) {
+
+    html, body {
+        height: 100dvh;            /* käytä koko näytön korkeus */
+        overflow: hidden;          /* ei scrollausta */
+    }
+
+    .game-container {
+        transform: scale(0.88);    /* ↓ pienennetään koko UI sopimaan ruutuun */
+        transform-origin: top center;
+        margin-top: calc(env(safe-area-inset-top) + 5px);
+        margin-bottom: calc(env(safe-area-inset-bottom) + 5px);
+    }
+
+    /* pienennetään välejä */
+    .board {
+        padding: 10px;
+        gap: 8px;
+    }
+
+
+
+    .status {
+        padding: 10px;
+        min-height: 40px;
+        font-size: 14px;
+    }
+
+    .stats {
+        font-size: 13px;
+        margin-top: 8px;
+    }
+}
+
+    </style>
+</head>
+<body>
+<div class="game-container">
+    <h1 id="title">⛄ Lumiukko</h1>
+    <div class="info">Liu'uta palloja kohti esteitä ja rakenna lumiukko</div>
+
+    <div class="puzzle-selector">
+        <label for="levelSelect">Taso:</label>
+        <select id="levelSelect">
+            <option value="starter">Aloittelija</option>
+            <option value="junior" selected>Juniori</option>
+            <option value="expert">Asiantuntija</option>
+            <option value="master">Mestari</option>
+            <option value="wizard">Velho</option>
+        </select>
+        <button id="randomButton">Uusi pulma</button>
+    </div>
+
+    <div class="status" id="status">Liu'uta pallo sinne mihin haluat</div>
+    <div class="board" id="board"></div>
+
+    <div class="controls">
+        <button class="btn-reset" onclick="game.reset()">⟳ Alusta</button>
+        <button class="btn-undo" onclick="game.undo()">↶ Peruuta</button>
+        <button class="btn-hint" onclick="game.hint()" style="display:none">💡 Vihje</button>
+    </div>
+
+    <div class="stats">Siirrot: <strong id="moves">0</strong></div>
+</div>
+
+<script>
+class SnowProblemGame {
+
+    constructor(puzzleString) {
+        this.parseBoard(puzzleString);
+        this.history = [];
+        this.moves = 0;
+        this.selected = null;
+        this.allPuzzles = [];
+        this.currentPuzzleData = null;
+        this.lastPuzzleId = null;
+        this.render();
+        this.setupEventListeners();
+        this.loadPuzzles();
+        this.setupRandomButton();
+    }
+
+    // 🔥 Satunnainen peilaus
+    randomMirror(grid) {
+        const modes = ["none", "h", "v", "hv"];
+        const mode = modes[Math.floor(Math.random() * 4)];
+        let lines = grid.trim().split("\n");
+        if (mode==="h"||mode==="hv") lines = lines.map(l=>[...l].reverse().join(""));
+        if (mode==="v"||mode==="hv") lines = [...lines].reverse();
+        return lines.join("\n");
+    }
+
+    // 🔥 Lataa pulmat ja arvo automaattisesti oletustaso (junior)
+    loadPuzzles() {
+        fetch("lumipallot-pulmia.json")
+            .then(r=>r.json())
+            .then(data=>{
+                this.allPuzzles = data;
+                this.updateStatus("Pulmat ladattu!");
+                this.autoStartPuzzle();   // ←🔥 Tässä automaattiarvonta
+            })
+            .catch(_=>console.log("Pulmatiedostoa ei löytynyt"));
+    }
+
+    // 🔥 Arvo pulma heti käynnistyksessä
+    autoStartPuzzle() {
+        const level = document.getElementById("levelSelect").value; // junior by default
+        const p = this.getRandomPuzzleForLevel(level);
+        if (!p) return;
+        const g = this.randomMirror(p.grid);
+
+        this.currentPuzzleData = p;
+        this.parseBoard(g);
+        this.history = [];
+        this.moves = 0;
+        this.selected = null;
+        this.render();
+        this.updateStatus(`Pulma: ${p.name}`);
+    }
+
+getRandomPuzzleForLevel(level) {
+    const list = this.allPuzzles.filter(p => p.level === level);
+    if (!list.length) return null;
+
+    if (list.length === 1) {
+        this.lastPuzzleId = list[0].id;
+        return list[0];
+    }
+
+    let candidate = null;
+
+    do {
+        candidate = list[Math.floor(Math.random() * list.length)];
+    } while (candidate.id === this.lastPuzzleId);
+
+    this.lastPuzzleId = candidate.id;
+    return candidate;
+}
+
+    setupRandomButton() {
+        document.getElementById("randomButton").onclick = () => {
+            const level = document.getElementById("levelSelect").value;
+            const p = this.getRandomPuzzleForLevel(level);
+            if (!p) {
+                this.updateStatus("Ei pulmia tältä tasolta");
+                return;
+            }
+
+            let grid = this.randomMirror(p.grid);
+
+            this.currentPuzzleData = p;
+            this.parseBoard(grid);
+            this.history = [];
+            this.moves = 0;
+            this.selected = null;
+            this.render();
+            this.updateStatus(`Pulma: ${p.name}`);
+        };
+    }
+
+    parseBoard(str){
+        const lines=str.trim().split("\n");
+        this.rows=lines.length;
+        this.cols=lines[0].length;
+        this.board = lines.map(l=>l.split(""));
+        this.initial = this.board.map(r=>[...r]);
+    }
+
+    reset(){
+        this.board = this.initial.map(r=>[...r]);
+        this.history=[]; this.moves=0; this.selected=null;
+        this.render();
+        this.updateStatus("Pulma nollattu");
+    }
+
+    undo(){
+        if (!this.history.length) return;
+        const prev=this.history.pop();
+        this.board=prev.board;
+        this.moves=prev.moves;
+        this.selected=null;
+        this.render();
+        this.updateStatus("Siirto peruttu");
+    }
+
+    saveHistory(){
+        this.history.push({
+            board:this.board.map(r=>[...r]),
+            moves:this.moves
+        });
+    }
+
+    isValid(r,c){return r>=0&&r<this.rows&&c>=0&&c<this.cols;}
+    getCell(r,c){return this.isValid(r,c)?this.board[r][c]:null;}
+    setCell(r,c,v){if(this.isValid(r,c))this.board[r][c]=v;}
+
+    canMove(r,c,dr,dc){
+        const v=this.getCell(r,c);
+        if(!v||v==="o"||v==="k")return false;
+        let nr=r+dr,nc=c+dc;
+        while(this.isValid(nr,nc)){
+            const t=this.getCell(nr,nc);
+            if(t==="k"||t!=="o"){
+                const sr=nr-dr,sc=nc-dc;
+                return this.isValid(sr,sc)&&this.getCell(sr,sc)==="o"&&!(sr===r&&sc===c);
+            }
+            nr+=dr;nc+=dc;
+        }
+        return false;
+    }
+
+    move(r,c,dr,dc){
+        if(!this.canMove(r,c,dr,dc))return false;
+        this.saveHistory();
+        const v=this.getCell(r,c);
+        let nr=r+dr,nc=c+dc;
+        while(this.isValid(nr,nc)){
+            const t=this.getCell(nr,nc);
+            if(t==="k"||t!=="o"){nr-=dr;nc-=dc;break;}
+            nr+=dr;nc+=dc;
+        }
+        this.setCell(r,c,"o");
+        this.setCell(nr,nc,v);
+        this.moves++; this.selected=null; this.render();
+        if(this.checkWin())this.updateStatus("🎉 Pulma ratkaistu!");
+        return true;
+    }
+
+    stack(fr,fc,tr,tc){
+        const A=this.getCell(fr,fc),B=this.getCell(tr,tc);
+        if(Math.abs(fr-tr)+Math.abs(fc-tc)!==1){
+            this.updateStatus("Osat vierekkäin!"); return false;
+        }
+        if(A==="s"&&B==="b"){
+            this.saveHistory(); this.setCell(fr,fc,"o"); this.setCell(tr,tc,"bs");
+            this.moves++; this.selected=null; this.render();
+            this.updateStatus("Keskiosa lisätty"); return true;
+        }
+        if(A==="h"&&B==="bs"){
+            this.saveHistory(); this.setCell(fr,fc,"o"); this.setCell(tr,tc,"bsh");
+            this.moves++; this.selected=null; this.render();
+            this.updateStatus("🎉 Lumiukko valmis!"); return true;
+        }
+        this.updateStatus("Väärä osayhdistelmä"); return false;
+    }
+
+    checkWin(){
+        for(let r=0;r<this.rows;r++)
+            for(let c=0;c<this.cols;c++)
+                if(this.getCell(r,c)!=="o"&&
+                   this.getCell(r,c)!=="k"&&
+                   this.getCell(r,c)!=="bsh")
+                   return false;
+        return true;
+    }
+
+    hint(){this.updateStatus("💡 Liu'uta palloja esteisiin.");}
+    updateStatus(msg){
+        const s=document.getElementById("status");
+        s.textContent=msg;
+        s.classList.toggle("success",msg.includes("🎉"));
+    }
+
+    render(){
+        const board=document.getElementById("board");
+        board.innerHTML="";
+        for(let r=0;r<this.rows;r++){
+            for(let c=0;c<this.cols;c++){
+                const cell=document.createElement("div");
+                const v=this.getCell(r,c);
+                cell.className="cell"; cell.dataset.r=r; cell.dataset.c=c;
+
+                if(v==="o")cell.classList.add("empty");
+                if(v==="k")cell.classList.add("tree");
+                if(v==="h")cell.classList.add("head");
+                if(this.selected&&this.selected[0]===r&&this.selected[1]===c)
+                    cell.classList.add("selected");
+
+                if(v==="b"){
+                    let i=document.createElement("img"); i.src="base.png"; cell.appendChild(i);
+                } else if(v==="s"){
+                    let i=document.createElement("img"); i.src="s.png"; cell.appendChild(i);
+                } else if(v==="h"){
+                    let i=document.createElement("img"); i.src="head.png"; cell.appendChild(i);
+                } else if(v==="bs"){
+                    let i=document.createElement("img"); i.src="sb.png"; cell.appendChild(i);
+                } else if(v==="bsh"){
+                    let i=document.createElement("img"); i.src="hsb.png"; cell.appendChild(i);
+                } else if(v==="k"){
+                    cell.textContent="🌲";
+                }
+
+                cell.draggable = (v!=="o"&&v!=="k");
+                cell.onclick = ()=>this.handleClick(r,c);
+                board.appendChild(cell);
+            }
+        }
+        document.getElementById("moves").textContent=this.moves;
+    }
+
+    handleClick(r,c){
+        const v=this.getCell(r,c);
+        if(v==="o"||v==="k")return;
+        if(this.selected){
+            const[sr,sc]=this.selected;
+            if(sr===r&&sc===c){this.selected=null;this.render();return;}
+            this.selected=null; this.stack(sr,sc,r,c); this.render(); return;
+        }
+        this.selected=[r,c]; this.render();
+        this.updateStatus("Valittu – klikkaa osaa pinottaaksesi");
+    }
+
+    setupEventListeners(){
+        const b=document.getElementById("board");
+        b.addEventListener("mousedown",e=>this.handleMouseDown(e));
+        b.addEventListener("touchstart",e=>this.handleTouchStart(e));
+    }
+
+    handleMouseDown(e){
+        const cell=e.target.closest(".cell"); if(!cell)return;
+        const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
+        if(v==="o"||v==="k")return;
+
+        this.dragStart={r,c,startX:e.clientX,startY:e.clientY,moved:false};
+
+        const move=ev=>{
+            if(!this.dragStart)return;
+            const dx=ev.clientX-this.dragStart.startX;
+            const dy=ev.clientY-this.dragStart.startY;
+            if(Math.abs(dx)>30||Math.abs(dy)>30){
+                this.dragStart.moved=true;
+                let dr=0,dc=0;
+                if(Math.abs(dx)>Math.abs(dy))dc=dx>0?1:-1;
+                else dr=dy>0?1:-1;
+                this.move(this.dragStart.r,this.dragStart.c,dr,dc);
+                this.dragStart=null;
+                document.removeEventListener("mousemove",move);
+                document.removeEventListener("mouseup",up);
+            }
+        };
+
+        const up=()=>{
+            if(this.dragStart&&!this.dragStart.moved){
+                if(this.selected){
+                    const[sr,sc]=this.selected;
+                    this.selected=null; this.stack(sr,sc,this.dragStart.r,this.dragStart.c); this.render();
+                } else {
+                    this.selected=[this.dragStart.r,this.dragStart.c]; this.render();
+                }
+            }
+            this.dragStart=null;
+            document.removeEventListener("mousemove",move);
+            document.removeEventListener("mouseup",up);
+        };
+
+        document.addEventListener("mousemove",move);
+        document.addEventListener("mouseup",up);
+    }
+
+    handleTouchStart(e){
+        const cell=e.target.closest(".cell"); if(!cell)return;
+        e.preventDefault();
+        const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
+        if(v==="o"||v==="k")return;
+
+        this.dragStart={r,c,startX:e.touches[0].clientX,startY:e.touches[0].clientY,moved:false};
+
+        const move=ev=>{
+            if(!this.dragStart)return;
+            const dx=ev.touches[0].clientX-this.dragStart.startX;
+            const dy=ev.touches[0].clientY-this.dragStart.startY;
+            if(Math.abs(dx)>30||Math.abs(dy)>30){
+                this.dragStart.moved=true;
+                let dr=0,dc=0;
+                if(Math.abs(dx)>Math.abs(dy))dc=dx>0?1:-1;
+                else dr=dy>0?1:-1;
+                this.move(this.dragStart.r,this.dragStart.c,dr,dc);
+                this.dragStart=null;
+                document.removeEventListener("touchmove",move);
+                document.removeEventListener("touchend",up);
+            }
+        };
+
+        const up=()=>{
+            if(this.dragStart&&!this.dragStart.moved){
+                if(this.selected){
+                    const[sr,sc]=this.selected;
+                    this.selected=null; this.stack(sr,sc,this.dragStart.r,this.dragStart.c); this.render();
+                }else{
+                    this.selected=[this.dragStart.r,this.dragStart.c]; this.render();
+                }
+            }
+            this.dragStart=null;
+            document.removeEventListener("touchmove",move);
+            document.removeEventListener("touchend",up);
+        };
+
+        document.addEventListener("touchmove",move,{passive:false});
+        document.addEventListener("touchend",up);
+    }
+
+}
+
+const game = new SnowProblemGame(`ooooo
+ooooo
+ooooo
+ooooo`);
+
+// === Service Worker registration (ADDED) ===
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function(){
+    navigator.serviceWorker.register('sw.js').catch(function(e){
+      console && console.warn && console.warn('SW reg failed', e);
+    });
+  });
+}
+
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+<style>
+  #qrOverlay{
+    position:fixed;inset:0;display:none;align-items:center;justify-content:center;
+    background:rgba(0,0,0,.6);z-index:999;
+  }
+  #qrBox{
+    background:#fff;padding:16px 20px;border-radius:12px;text-align:center;
+    box-shadow:0 0 20px rgba(0,0,0,.4);
+  }
+  #qrBox canvas{width:180px;height:180px;}
+  #qrBox p{margin:8px 0 0;font-size:14px;color:#222;}
+</style>
+
+<div id="qrOverlay">
+  <div id="qrBox">
+    <canvas id="qr"></canvas>
+    <p>ymouse91.github.io/lumiukko/</p>
+  </div>
+</div>
+
+<script>
+const qr = new QRious({
+  element: document.getElementById('qr'),
+  value: 'https://ymouse91.github.io/lumiukko/',
+  size: 180
+});
+const overlay = document.getElementById('qrOverlay');
+const title = document.getElementById('title');
+title.addEventListener('click', ()=>overlay.style.display='flex');
+overlay.addEventListener('click', ()=>overlay.style.display='none');
+</script>
+
+</body>
+</html>
