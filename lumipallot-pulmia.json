@@ -30,12 +30,6 @@
     "grid": "bokoo\nohoho\nkoooo\nssoob"
   },
   {
-    "id": 1764325820739,
-    "name": "69 - 25",
-    "level": "wizard",
-    "grid": "bohhb\nskooo\noookh\nbooss"
-  },
-  {
     "id": 1764343583127,
     "name": "3 - 4",
     "level": "starter",
@@ -66,8 +60,8 @@
     "grid": "ooooo\nokkoo\nooooh\nsoboo"
   },
   {
-    "id": 1764343777702,
-    "name": "Nimetön pulma",
+    "id": 1764432704210,
+    "name": "8 - 7",
     "level": "starter",
     "grid": "okosb\nooook\nooooo\noohoo"
   },
@@ -304,5 +298,167 @@
     "name": "48 - 15",
     "level": "expert",
     "grid": "okoob\nosook\nooooo\nohshb"
+  },
+  {
+    "id": 1764425999751,
+    "name": "54 - 13",
+    "level": "master",
+    "grid": "ooboo\nokooh\nokooh\nssoob"
+  },
+  {
+    "id": 1764426035913,
+    "name": "55 - 13",
+    "level": "master",
+    "grid": "bkhhb\nooooo\nooooo\nsooks"
+  },
+  {
+    "id": 1764426090059,
+    "name": "56 - 14",
+    "level": "master",
+    "grid": "okoks\nooooo\nsohob\nohobo"
+  },
+  {
+    "id": 1764433443519,
+    "name": "57 - 22",
+    "level": "master",
+    "grid": "ookoo\nkosho\nosooh\nbooob"
+  },
+  {
+    "id": 1764426154357,
+    "name": "58 - 27",
+    "level": "master",
+    "grid": "ksooo\nooooh\nkoboo\nboohs"
+  },
+  {
+    "id": 1764433451039,
+    "name": "59 - 15",
+    "level": "master",
+    "grid": "boobo\nokooh\nhooko\nosoos"
+  },
+  {
+    "id": 1764426209228,
+    "name": "60 - 14 ",
+    "level": "master",
+    "grid": "bsooh\nokkoo\nhoooo\nosoob"
+  },
+  {
+    "id": 1764426254157,
+    "name": "61 - 21",
+    "level": "master",
+    "grid": "hohos\nohobk\nbssoo\nooobo"
+  },
+  {
+    "id": 1764426288386,
+    "name": "62 - 31",
+    "level": "master",
+    "grid": "sssho\nokbbh\nokooo\nooohb"
+  },
+  {
+    "id": 1764426333738,
+    "name": "63 - 17",
+    "level": "master",
+    "grid": "oobos\nookos\nhohoh\nsobob"
+  },
+  {
+    "id": 1764426370897,
+    "name": "64 - 18",
+    "level": "master",
+    "grid": "sohoo\nkhohb\nooosk\nbboos"
+  },
+  {
+    "id": 1764432759620,
+    "name": "65 - 23",
+    "level": "wizard",
+    "grid": "ohoho\nksboo\noosok\nooboo"
+  },
+  {
+    "id": 1764432793499,
+    "name": "66 - 22",
+    "level": "wizard",
+    "grid": "ohoob\nooooo\nsoooo\noohsb"
+  },
+  {
+    "id": 1764432822596,
+    "name": "67 - 21 ",
+    "level": "wizard",
+    "grid": "oboob\nkooos\nhoooo\noohso"
+  },
+  {
+    "id": 1764432875140,
+    "name": "68 - 16",
+    "level": "wizard",
+    "grid": "kohso\nskooo\noooob\nbohoo"
+  },
+  {
+    "id": 1764432903031,
+    "name": "69 - 25 ",
+    "level": "wizard",
+    "grid": "bohhb\nskooo\noookh\nbooss"
+  },
+  {
+    "id": 1764432931038,
+    "name": "70 - 20",
+    "level": "starter",
+    "grid": "oksso\nokosb\nhbooo\nhobho"
+  },
+  {
+    "id": 1764432959948,
+    "name": "71 - 19",
+    "level": "wizard",
+    "grid": "bokos\nhokos\nhbsoo\nboooh"
+  },
+  {
+    "id": 1764432996042,
+    "name": "72 - 20",
+    "level": "wizard",
+    "grid": "bbobs\nkhooo\nhhooo\noosos"
+  },
+  {
+    "id": 1764433024207,
+    "name": "73 - 18",
+    "level": "wizard",
+    "grid": "ohoos\nooooo\nbooos\nooohb"
+  },
+  {
+    "id": 1764433087030,
+    "name": "74 - 21",
+    "level": "wizard",
+    "grid": "kbboo\nossoh\nhoooo\noooko"
+  },
+  {
+    "id": 1764433080258,
+    "name": "75 - 24",
+    "level": "wizard",
+    "grid": "skooo\nooooh\nsoooh\nbkoob"
+  },
+  {
+    "id": 1764433120846,
+    "name": "76 - 27",
+    "level": "wizard",
+    "grid": "boohs\nkoboo\nooooh\nosooo"
+  },
+  {
+    "id": 1764433173964,
+    "name": "77 - 25",
+    "level": "wizard",
+    "grid": "ksobo\nhooos\nooksb\nohohb"
+  },
+  {
+    "id": 1764433205155,
+    "name": "78 - 26",
+    "level": "wizard",
+    "grid": "ohhhb\nooooo\nsooob\nssboo"
+  },
+  {
+    "id": 1764433237951,
+    "name": "79 - 31",
+    "level": "wizard",
+    "grid": "kobok\nhhsoo\nhbsoo\noosob"
+  },
+  {
+    "id": 1764433294962,
+    "name": "80 - 44",
+    "level": "wizard",
+    "grid": "skoho\nobbsb\nkooso\nooohh"
   }
 ]

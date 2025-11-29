@@ -20,7 +20,7 @@
         *{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;-webkit-touch-callout:none;}
         body{
             font-family:Arial,sans-serif;display:flex;justify-content:center;align-items:center;
-            min-height:100vh;background:linear-gradient(135deg,#667eea,#764ba2);padding:10px;
+            min-height:100vh;background:linear-gradient(135deg,#407eea,#663ba2);padding:10px;
         }
         .game-container{
             background:white;border-radius:15px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,0.3);
@@ -71,10 +71,12 @@ h1{
             align-items:center;justify-content:center;color:#333;
         }
         .status.success{background:#90EE90;color:#155724;font-size:18px;}
+		
+		.status.lumiukko{background:#ffd93d;color:#155724;font-size:18px;}
 
         .stats{text-align:center;color:#666;font-size:14px;margin-top:15px;}
 		
-		/* iPhone (kaikki mallit, pysty + vaaka) */
+				/* iPhone (kaikki mallit, pysty + vaaka) */
 @media only screen 
   and (max-device-width: 430px)
   and (-webkit-min-device-pixel-ratio: 2)
@@ -135,13 +137,11 @@ only screen
         margin-top: 8px;
     }
 }
-
     </style>
 </head>
 <body>
 <div class="game-container">
     <h1 id="title">⛄ LUMIUKKO ⛄</h1>
-   <!--  <div class="info">Liu'uta palloja kohti esteitä ja rakenna lumiukko</div> -->
 
     <div class="puzzle-selector">
         <label for="levelSelect" style="display:none">Taso:</label>
@@ -162,6 +162,9 @@ only screen
         <button class="btn-reset" onclick="game.reset()">⟳ Alusta</button>
         <button class="btn-undo" onclick="game.undo()">↶ Peruuta</button>
         <button class="btn-hint" onclick="game.hint()" style="display:none">💡 Vihje</button>
+
+        <!-- ⭐ PYYSIT YHDEN AINOAN NAPIN → TÄSSÄ SE ON -->
+        <button class="btn-hint" onclick="game.showSolution()">▶ Ratkaisu</button>
     </div>
 
     <div class="stats">Siirrot: <strong id="moves">0</strong></div>
@@ -184,79 +187,66 @@ class SnowProblemGame {
         this.setupRandomButton();
     }
 
-    // 🔥 Satunnainen peilaus
     randomMirror(grid) {
-        const modes = ["none", "h", "v", "hv"];
-        const mode = modes[Math.floor(Math.random() * 4)];
-        let lines = grid.trim().split("\n");
-        if (mode==="h"||mode==="hv") lines = lines.map(l=>[...l].reverse().join(""));
-        if (mode==="v"||mode==="hv") lines = [...lines].reverse();
+        const modes=["none","h","v","hv"];
+        const mode=modes[Math.floor(Math.random()*4)];
+        let lines=grid.trim().split("\n");
+        if(mode==="h"||mode==="hv")lines=lines.map(l=>[...l].reverse().join(""));
+        if(mode==="v"||mode==="hv")lines=[...lines].reverse();
         return lines.join("\n");
     }
 
-    // 🔥 Lataa pulmat ja arvo automaattisesti oletustaso (junior)
     loadPuzzles() {
         fetch("lumipallot-pulmia.json")
             .then(r=>r.json())
             .then(data=>{
-                this.allPuzzles = data;
+                this.allPuzzles=data;
                 this.updateStatus("Pulmat ladattu!");
-                this.autoStartPuzzle();   // ←🔥 Tässä automaattiarvonta
+                this.autoStartPuzzle();
             })
             .catch(_=>console.log("Pulmatiedostoa ei löytynyt"));
     }
 
-    // 🔥 Arvo pulma heti käynnistyksessä
     autoStartPuzzle() {
-        const level = document.getElementById("levelSelect").value; // junior by default
-        const p = this.getRandomPuzzleForLevel(level);
-        if (!p) return;
-        const g = this.randomMirror(p.grid);
+        const level=document.getElementById("levelSelect").value;
+        const p=this.getRandomPuzzleForLevel(level);
+        if(!p)return;
+        const g=this.randomMirror(p.grid);
 
-        this.currentPuzzleData = p;
+        this.currentPuzzleData=p;
         this.parseBoard(g);
-        this.history = [];
-        this.moves = 0;
-        this.selected = null;
+        this.history=[];
+        this.moves=0;
+        this.selected=null;
         this.render();
         this.updateStatus(`Pulma: ${p.name}`);
     }
 
-getRandomPuzzleForLevel(level) {
-    const list = this.allPuzzles.filter(p => p.level === level);
-    if (!list.length) return null;
+    getRandomPuzzleForLevel(level){
+        const list=this.allPuzzles.filter(p=>p.level===level);
+        if(!list.length)return null;
 
-    if (list.length === 1) {
-        this.lastPuzzleId = list[0].id;
-        return list[0];
+        let cand=null;
+        do{
+            cand=list[Math.floor(Math.random()*list.length)];
+        }while(cand.id===this.lastPuzzleId);
+
+        this.lastPuzzleId=cand.id;
+        return cand;
     }
 
-    let candidate = null;
+    setupRandomButton(){
+        document.getElementById("randomButton").onclick=()=>{
+            const level=document.getElementById("levelSelect").value;
+            const p=this.getRandomPuzzleForLevel(level);
+            if(!p){this.updateStatus("Ei pulmia tältä tasolta");return;}
 
-    do {
-        candidate = list[Math.floor(Math.random() * list.length)];
-    } while (candidate.id === this.lastPuzzleId);
-
-    this.lastPuzzleId = candidate.id;
-    return candidate;
-}
-
-    setupRandomButton() {
-        document.getElementById("randomButton").onclick = () => {
-            const level = document.getElementById("levelSelect").value;
-            const p = this.getRandomPuzzleForLevel(level);
-            if (!p) {
-                this.updateStatus("Ei pulmia tältä tasolta");
-                return;
-            }
-
-            let grid = this.randomMirror(p.grid);
-
-            this.currentPuzzleData = p;
+            let grid=this.randomMirror(p.grid);
+            this.currentPuzzleData=p;
             this.parseBoard(grid);
-            this.history = [];
-            this.moves = 0;
-            this.selected = null;
+            this.history=[];
+            this.moves=0;
+            this.selected=null;
             this.render();
             this.updateStatus(`Pulma: ${p.name}`);
         };
@@ -266,19 +256,21 @@ getRandomPuzzleForLevel(level) {
         const lines=str.trim().split("\n");
         this.rows=lines.length;
         this.cols=lines[0].length;
-        this.board = lines.map(l=>l.split(""));
-        this.initial = this.board.map(r=>[...r]);
+        this.board=lines.map(l=>l.split(""));
+        this.initial=this.board.map(r=>[...r]);
     }
 
     reset(){
-        this.board = this.initial.map(r=>[...r]);
-        this.history=[]; this.moves=0; this.selected=null;
+        this.board=this.initial.map(r=>[...r]);
+        this.history=[];
+        this.moves=0;
+        this.selected=null;
         this.render();
         this.updateStatus("Pulma nollattu");
     }
 
     undo(){
-        if (!this.history.length) return;
+        if(!this.history.length)return;
         const prev=this.history.pop();
         this.board=prev.board;
         this.moves=prev.moves;
@@ -288,10 +280,7 @@ getRandomPuzzleForLevel(level) {
     }
 
     saveHistory(){
-        this.history.push({
-            board:this.board.map(r=>[...r]),
-            moves:this.moves
-        });
+        this.history.push({board:this.board.map(r=>[...r]),moves:this.moves});
     }
 
     isValid(r,c){return r>=0&&r<this.rows&&c>=0&&c<this.cols;}
@@ -325,44 +314,64 @@ getRandomPuzzleForLevel(level) {
         }
         this.setCell(r,c,"o");
         this.setCell(nr,nc,v);
-        this.moves++; this.selected=null; this.render();
-        if(this.checkWin())this.updateStatus("🎉 Pulma ratkaistu!");
+        this.moves++;
+        this.selected=null;
+        this.render();
+
         return true;
     }
 
     stack(fr,fc,tr,tc){
         const A=this.getCell(fr,fc),B=this.getCell(tr,tc);
         if(Math.abs(fr-tr)+Math.abs(fc-tc)!==1){
-            this.updateStatus("Osat vierekkäin!"); return false;
+            this.updateStatus("Osat vierekkäin!");
+            return false;
         }
         if(A==="s"&&B==="b"){
-            this.saveHistory(); this.setCell(fr,fc,"o"); this.setCell(tr,tc,"bs");
-            this.moves++; this.selected=null; this.render();
-            this.updateStatus("Keskiosa lisätty"); return true;
+            this.saveHistory();
+            this.setCell(fr,fc,"o");
+            this.setCell(tr,tc,"bs");
+            this.moves++;
+            this.selected=null;
+            this.render();
+            return true;
         }
         if(A==="h"&&B==="bs"){
-            this.saveHistory(); this.setCell(fr,fc,"o"); this.setCell(tr,tc,"bsh");
-            this.moves++; this.selected=null; this.render();
-            this.updateStatus("🎉 Lumiukko valmis!"); return true;
+            this.saveHistory();
+            this.setCell(fr,fc,"o");
+            this.setCell(tr,tc,"bsh");
+            this.moves++;
+            this.selected=null;
+            this.render();
+            this.updateStatus("⛄ Lumiukko valmis!");
+			 // ⭐ TÄMÄ KORJAA ONGELMAN: pulma valmis vasta kun kaikki ukot koottu
+            if (this.checkWin()) {
+               this.updateStatus("🎉 Pulma ratkaistu!");
+            }
+
+            return true;
         }
-        this.updateStatus("Väärä osayhdistelmä"); return false;
+        this.updateStatus("Väärä osayhdistelmä");
+        return false;
     }
 
     checkWin(){
         for(let r=0;r<this.rows;r++)
-            for(let c=0;c<this.cols;c++)
-                if(this.getCell(r,c)!=="o"&&
-                   this.getCell(r,c)!=="k"&&
-                   this.getCell(r,c)!=="bsh")
-                   return false;
+            for(let c=0;c<this.cols;c++){
+                const v=this.getCell(r,c);
+                if(v!=="o"&&v!=="k"&&v!=="bsh")return false;
+            }
         return true;
     }
 
     hint(){this.updateStatus("💡 Liu'uta palloja esteisiin.");}
+
     updateStatus(msg){
         const s=document.getElementById("status");
         s.textContent=msg;
+		s.classList.toggle("lumiukko",msg.includes("⛄"));
         s.classList.toggle("success",msg.includes("🎉"));
+
     }
 
     render(){
@@ -372,30 +381,32 @@ getRandomPuzzleForLevel(level) {
             for(let c=0;c<this.cols;c++){
                 const cell=document.createElement("div");
                 const v=this.getCell(r,c);
-                cell.className="cell"; cell.dataset.r=r; cell.dataset.c=c;
+                cell.className="cell";
+                cell.dataset.r=r;
+                cell.dataset.c=c;
 
                 if(v==="o")cell.classList.add("empty");
                 if(v==="k")cell.classList.add("tree");
                 if(v==="h")cell.classList.add("head");
+
                 if(this.selected&&this.selected[0]===r&&this.selected[1]===c)
                     cell.classList.add("selected");
 
                 if(v==="b"){
-                    let i=document.createElement("img"); i.src="base.png"; cell.appendChild(i);
-                } else if(v==="s"){
-                    let i=document.createElement("img"); i.src="s.png"; cell.appendChild(i);
-                } else if(v==="h"){
-                    let i=document.createElement("img"); i.src="head.png"; cell.appendChild(i);
-                } else if(v==="bs"){
-                    let i=document.createElement("img"); i.src="sb.png"; cell.appendChild(i);
-                } else if(v==="bsh"){
-                    let i=document.createElement("img"); i.src="hsb.png"; cell.appendChild(i);
-                } else if(v==="k"){
+                    let i=document.createElement("img");i.src="base.png";cell.appendChild(i);
+                }else if(v==="s"){
+                    let i=document.createElement("img");i.src="s.png";cell.appendChild(i);
+                }else if(v==="h"){
+                    let i=document.createElement("img");i.src="head.png";cell.appendChild(i);
+                }else if(v==="bs"){
+                    let i=document.createElement("img");i.src="sb.png";cell.appendChild(i);
+                }else if(v==="bsh"){
+                    let i=document.createElement("img");i.src="hsb.png";cell.appendChild(i);
+                }else if(v==="k"){
                     cell.textContent="🌲";
                 }
 
-                cell.draggable = (v!=="o"&&v!=="k");
-                cell.onclick = ()=>this.handleClick(r,c);
+                cell.onclick=()=>this.handleClick(r,c);
                 board.appendChild(cell);
             }
         }
@@ -405,13 +416,17 @@ getRandomPuzzleForLevel(level) {
     handleClick(r,c){
         const v=this.getCell(r,c);
         if(v==="o"||v==="k")return;
+
         if(this.selected){
             const[sr,sc]=this.selected;
-            if(sr===r&&sc===c){this.selected=null;this.render();return;}
-            this.selected=null; this.stack(sr,sc,r,c); this.render(); return;
+            this.selected=null;
+            this.stack(sr,sc,r,c);
+            this.render();
+            return;
         }
-        this.selected=[r,c]; this.render();
-        this.updateStatus("Valittu – klikkaa osaa pinottaaksesi");
+
+        this.selected=[r,c];
+        this.render();
     }
 
     setupEventListeners(){
@@ -421,7 +436,8 @@ getRandomPuzzleForLevel(level) {
     }
 
     handleMouseDown(e){
-        const cell=e.target.closest(".cell"); if(!cell)return;
+        const cell=e.target.closest(".cell");
+        if(!cell)return;
         const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
         if(v==="o"||v==="k")return;
 
@@ -442,14 +458,16 @@ getRandomPuzzleForLevel(level) {
                 document.removeEventListener("mouseup",up);
             }
         };
-
         const up=()=>{
             if(this.dragStart&&!this.dragStart.moved){
                 if(this.selected){
                     const[sr,sc]=this.selected;
-                    this.selected=null; this.stack(sr,sc,this.dragStart.r,this.dragStart.c); this.render();
-                } else {
-                    this.selected=[this.dragStart.r,this.dragStart.c]; this.render();
+                    this.selected=null;
+                    this.stack(sr,sc,this.dragStart.r,this.dragStart.c);
+                    this.render();
+                }else{
+                    this.selected=[this.dragStart.r,this.dragStart.c];
+                    this.render();
                 }
             }
             this.dragStart=null;
@@ -462,7 +480,8 @@ getRandomPuzzleForLevel(level) {
     }
 
     handleTouchStart(e){
-        const cell=e.target.closest(".cell"); if(!cell)return;
+        const cell=e.target.closest(".cell");
+        if(!cell)return;
         e.preventDefault();
         const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
         if(v==="o"||v==="k")return;
@@ -484,14 +503,16 @@ getRandomPuzzleForLevel(level) {
                 document.removeEventListener("touchend",up);
             }
         };
-
         const up=()=>{
             if(this.dragStart&&!this.dragStart.moved){
                 if(this.selected){
                     const[sr,sc]=this.selected;
-                    this.selected=null; this.stack(sr,sc,this.dragStart.r,this.dragStart.c); this.render();
+                    this.selected=null;
+                    this.stack(sr,sc,this.dragStart.r,this.dragStart.c);
+                    this.render();
                 }else{
-                    this.selected=[this.dragStart.r,this.dragStart.c]; this.render();
+                    this.selected=[this.dragStart.r,this.dragStart.c];
+                    this.render();
                 }
             }
             this.dragStart=null;
@@ -505,22 +526,205 @@ getRandomPuzzleForLevel(level) {
 
 }
 
-const game = new SnowProblemGame(`ooooo
+/* ============================================================
+     ⭐ SIMULAATTORI + SOLVERI + SHOWSOLUTION
+============================================================ */
+
+class SnowSim {
+    static clone(b){return b.map(r=>[...r]);}
+    static key(b){return b.map(r=>r.join("")).join("|");}
+    static isValid(b,r,c){return r>=0&&r<b.length&&c>=0&&c<b[0].length;}
+    static get(b,r,c){return this.isValid(b,r,c)?b[r][c]:null;}
+    static set(b,r,c,v){if(this.isValid(b,r,c))b[r][c]=v;}
+
+    static canMove(b,r,c,dr,dc){
+        const v=this.get(b,r,c);
+        if(v!=="b" && v!=="s") return false;  /* 🔥 vain b ja s liikkuvat */
+
+        let nr=r+dr,nc=c+dc;
+        while(this.isValid(b,nr,nc)){
+            const t=this.get(b,nr,nc);
+            if(t==="k"||t!=="o"){
+                const sr=nr-dr,sc=nc-dc;
+                return this.isValid(b,sr,sc)&&this.get(b,sr,sc)==="o";
+            }
+            nr+=dr;nc+=dc;
+        }
+        return false;
+    }
+
+    static move(b,r,c,dr,dc){
+        if(!this.canMove(b,r,c,dr,dc))return null;
+        let nb=this.clone(b);
+        const v=this.get(nb,r,c);
+
+        let nr=r+dr,nc=c+dc;
+        while(this.isValid(nb,nr,nc)){
+            const t=this.get(nb,nr,nc);
+            if(t==="k"||t!=="o"){nr-=dr;nc-=dc;break;}
+            nr+=dr;nc+=dc;
+        }
+
+        this.set(nb,r,c,"o");
+        this.set(nb,nr,nc,v);
+        return nb;
+    }
+
+    static stack(b,fr,fc,tr,tc){
+        const A=this.get(b,fr,fc),B=this.get(b,tr,tc);
+
+        if(Math.abs(fr-tr)+Math.abs(fc-tc)!==1)return null;
+
+        if(A==="s"&&B==="b"){
+            let nb=this.clone(b);
+            this.set(nb,fr,fc,"o");
+            this.set(nb,tr,tc,"bs");
+            return nb;
+        }
+
+        if(A==="h"&&B==="bs"){
+            let nb=this.clone(b);
+            this.set(nb,fr,fc,"o");
+            this.set(nb,tr,tc,"bsh");
+            return nb;
+        }
+        return null;
+    }
+
+    static isWin(b){
+        for(let r=0;r<b.length;r++)
+            for(let c=0;c<b[0].length;c++){
+                const v=b[r][c];
+                if(v!=="o"&&v!=="k"&&v!=="bsh")return false;
+            }
+        return true;
+    }
+}
+
+SnowProblemGame.prototype.solver=function(){
+
+    const start=SnowSim.clone(this.board);
+    if(SnowSim.isWin(start))return [];
+
+    const Q=[{b:start,moves:[]}];
+    const seen=new Set([SnowSim.key(start)]);
+
+    const dirs=[
+        {dr:1,dc:0,name:"↓"},
+        {dr:-1,dc:0,name:"↑"},
+        {dr:0,dc:1,name:"→"},
+        {dr:0,dc:-1,name:"←"}
+    ];
+
+    while(Q.length){
+        const node=Q.shift();
+        const b=node.b, moves=node.moves;
+
+        /* PINONTA */
+        for(let r=0;r<this.rows;r++){
+            for(let c=0;c<this.cols;c++){
+                const A=SnowSim.get(b,r,c);
+                if(A==="s"||A==="h"){
+                    const neigh=[[1,0],[-1,0],[0,1],[0,-1]];
+                    for(const[dr,dc] of neigh){
+                        const nr=r+dr,nc=c+dc;
+                        const nb=SnowSim.stack(b,r,c,nr,nc);
+                        if(!nb)continue;
+
+                        const key=SnowSim.key(nb);
+                        if(seen.has(key))continue;
+
+                        if(SnowSim.isWin(nb))return [...moves,`PIN ${r},${c}→${nr},${nc}`];
+
+                        seen.add(key);
+                        Q.push({b:nb,moves:[...moves,`PIN ${r},${c}→${nr},${nc}`]});
+                    }
+                }
+            }
+        }
+
+        /* LIIKKEET (vain b ja s) */
+        for(let r=0;r<this.rows;r++){
+            for(let c=0;c<this.cols;c++){
+                const A=SnowSim.get(b,r,c);
+                if(A!=="b"&&A!=="s")continue;
+
+                for(const d of dirs){
+                    const nb=SnowSim.move(b,r,c,d.dr,d.dc);
+                    if(!nb)continue;
+
+                    const key=SnowSim.key(nb);
+                    if(seen.has(key))continue;
+
+                    if(SnowSim.isWin(nb))
+                        return [...moves,`MOVE ${A} ${d.name} ${r},${c}`];
+
+                    seen.add(key);
+                    Q.push({b:nb,moves:[...moves,`MOVE ${A} ${d.name} ${r},${c}`]});
+                }
+            }
+        }
+    }
+
+    return null;
+};
+
+/* ============================================================
+        ⭐ ASKEL-ASKELTA NÄYTETTÄVÄ RATKAISU
+============================================================ */
+
+SnowProblemGame.prototype.showSolution=function(){
+
+    const sol=this.solver();
+    if(!sol||!sol.length)return;
+
+    let i=0;
+    const step=()=>{
+
+        if(i>=sol.length)return;
+
+        const m=sol[i];
+
+        if(m.startsWith("MOVE")){
+            const parts=m.split(" ");
+            const A=parts[1], dir=parts[2];
+            const rc=parts[3].split(",");
+            const r=+rc[0], c=+rc[1];
+
+            let dr=0,dc=0;
+            if(dir==="↑")dr=-1;
+            if(dir==="↓")dr=1;
+            if(dir==="←")dc=-1;
+            if(dir==="→")dc=1;
+
+            this.move(r,c,dr,dc);
+        }
+
+        if(m.startsWith("PIN")){
+            const p=m.match(/PIN (\d+),(\d+)→(\d+),(\d+)/);
+            this.stack(+p[1],+p[2],+p[3],+p[4]);
+        }
+
+        i++;
+        setTimeout(step,700);
+    };
+
+    step();
+};
+
+/* ============================================================
+      Käynnistä peli
+============================================================ */
+const game=new SnowProblemGame(`ooooo
 ooooo
 ooooo
 ooooo`);
 
-// === Service Worker registration (ADDED) ===
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('service-worker.js').catch(function(e){
-      console && console.warn && console.warn('SW reg failed', e);
-    });
-  });
-}
-
 </script>
+
+<!-- QR Koodi yms… -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+
 <style>
   #qrOverlay{
     position:fixed;inset:0;display:none;align-items:center;justify-content:center;
@@ -531,7 +735,6 @@ if ('serviceWorker' in navigator) {
     box-shadow:0 0 20px rgba(0,0,0,.4);
   }
   #qrBox canvas{width:180px;height:180px;}
-  #qrBox p{margin:8px 0 0;font-size:14px;color:#222;}
 </style>
 
 <div id="qrOverlay">
@@ -542,15 +745,14 @@ if ('serviceWorker' in navigator) {
 </div>
 
 <script>
-const qr = new QRious({
-  element: document.getElementById('qr'),
-  value: 'https://ymouse91.github.io/lumiukko/',
-  size: 180
+const qr=new QRious({
+  element:document.getElementById('qr'),
+  value:'https://ymouse91.github.io/lumiukko/',
+  size:180
 });
-const overlay = document.getElementById('qrOverlay');
-const title = document.getElementById('title');
-title.addEventListener('click', ()=>overlay.style.display='flex');
-overlay.addEventListener('click', ()=>overlay.style.display='none');
+const overlay=document.getElementById('qrOverlay');
+document.getElementById('title').onclick=()=>overlay.style.display='flex';
+overlay.onclick=()=>overlay.style.display='none';
 </script>
 
 </body>
