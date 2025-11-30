@@ -289,7 +289,7 @@ class SnowProblemGame {
 
     canMove(r,c,dr,dc){
         const v=this.getCell(r,c);
-        if(!v||v==="o"||v==="k")return false;
+if(!v || v==="o" || v==="k" || v==="h") return false;
         let nr=r+dr,nc=c+dc;
         while(this.isValid(nr,nc)){
             const t=this.getCell(nr,nc);
