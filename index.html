@@ -580,30 +580,30 @@ class SnowSim {
 
 
 
-static move(b,r,c,dr,dc){
-    const v = this.get(b,r,c);
+    static move(b,r,c,dr,dc){
+        const v = this.get(b,r,c);
 
-    // vain b ja s saavat liikkua (ei bs, bsh, h)
-    if(v!=="b" && v!=="s") return null;
+        // vain b ja s saavat liikkua (ei bs, bsh, h)
+        if(v!=="b" && v!=="s") return null;
 
-    let nr=r+dr, nc=c+dc;
-    while(this.isValid(b,nr,nc)){
-        const t=this.get(b,nr,nc);
-        if(t==="k" || t!=="o"){
-            nr-=dr; nc-=dc;
-            break;
+        let nr=r+dr, nc=c+dc;
+        while(this.isValid(b,nr,nc)){
+            const t=this.get(b,nr,nc);
+            if(t==="k" || t!=="o"){
+                nr-=dr; nc-=dc;
+                break;
+            }
+            nr+=dr; nc+=dc;
         }
-        nr+=dr; nc+=dc;
+
+        // ei oikeaa liikettä
+        if(nr===r && nc===c) return null;
+
+        const nb=this.clone(b);
+        this.set(nb,r,c,"o");
+        this.set(nb,nr,nc,v);
+       return nb;
     }
-
-    // ei oikeaa liikettä
-    if(nr===r && nc===c) return null;
-
-    const nb=this.clone(b);
-    this.set(nb,r,c,"o");
-    this.set(nb,nr,nc,v);
-    return nb;
-}
 
 
     static stack(b,fr,fc,tr,tc){
