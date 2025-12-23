@@ -185,6 +185,7 @@ class SnowProblemGame {
         this.setupEventListeners();
         this.loadPuzzles();
         this.setupRandomButton();
+		this.setupLevelChange();
     }
 
     randomMirror(grid) {
@@ -251,6 +252,12 @@ class SnowProblemGame {
             this.updateStatus(`Pulma: ${p.name}`);
         };
     }
+
+setupLevelChange(){
+    document.getElementById("levelSelect").addEventListener("change", ()=>{
+        this.autoStartPuzzle(); // arvo heti uusi kenttä valitulta tasolta
+    });
+}
 
     parseBoard(str){
         const lines=str.trim().split("\n");
