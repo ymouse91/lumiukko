@@ -578,8 +578,6 @@ class SnowSim {
     static set(b,r,c,v){if(this.isValid(b,r,c))b[r][c]=v;}
 
 
-
-
     static move(b,r,c,dr,dc){
         const v = this.get(b,r,c);
 
@@ -602,9 +600,8 @@ class SnowSim {
         const nb=this.clone(b);
         this.set(nb,r,c,"o");
         this.set(nb,nr,nc,v);
-       return nb;
+        return nb;
     }
-
 
     static stack(b,fr,fc,tr,tc){
         const A=this.get(b,fr,fc),B=this.get(b,tr,tc);
