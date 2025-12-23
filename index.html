@@ -298,20 +298,27 @@ setupLevelChange(){
     getCell(r,c){return this.isValid(r,c)?this.board[r][c]:null;}
     setCell(r,c,v){if(this.isValid(r,c))this.board[r][c]=v;}
 
-    canMove(r,c,dr,dc){
-        const v=this.getCell(r,c);
-        if(v!=="b" && v!=="s") return false;   // ✅ bs ja bsh eivät liiku
-        let nr=r+dr,nc=c+dc;
-        while(this.isValid(nr,nc)){
-            const t=this.getCell(nr,nc);
-            if(t==="k"||t!=="o"){
-                const sr=nr-dr,sc=nc-dc;
-                return this.isValid(sr,sc)&&this.getCell(sr,sc)==="o"&&!(sr===r&&sc===c);
-            }
-            nr+=dr;nc+=dc;
+canMove(r,c,dr,dc){
+    const v=this.getCell(r,c);
+
+    // Vain b ja s saavat liikkua (ei bs eikä bsh eikä h)
+    if(v!=="b" && v!=="s") return false;
+
+    let nr=r+dr,nc=c+dc;
+    while(this.isValid(nr,nc)){
+        const t=this.getCell(nr,nc);
+
+        // pysähtyy esteeseen tai muuhun palikkaan
+        if(t==="k" || t!=="o"){
+            const sr=nr-dr, sc=nc-dc;
+            return this.isValid(sr,sc) && this.getCell(sr,sc)==="o" && !(sr===r && sc===c);
         }
-        return false;
+
+        nr+=dr; nc+=dc;
     }
+    return false;
+}
+
 
     move(r,c,dr,dc){
         if(!this.canMove(r,c,dr,dc))return false;
@@ -424,21 +431,28 @@ setupLevelChange(){
         document.getElementById("moves").textContent=this.moves;
     }
 
-    handleClick(r,c){
-        const v=this.getCell(r,c);
-        if(v==="o"||v==="k")return;
+handleClick(r,c){
+    const v=this.getCell(r,c);
+    if(v==="o"||v==="k")return;
 
-        if(this.selected){
-            const[sr,sc]=this.selected;
-            this.selected=null;
-            this.stack(sr,sc,r,c);
-            this.render();
-            return;
-        }
+    const locked = (v==="bs" || v==="bsh");
 
-        this.selected=[r,c];
+    // Estä lukitun valinta aloituspalan rooliin,
+    // mutta salli lukittu kohteena, jos jokin pala on jo valittuna.
+    if(locked && !this.selected) return;
+
+    if(this.selected){
+        const[sr,sc]=this.selected;
+        this.selected=null;
+        this.stack(sr,sc,r,c);
         this.render();
+        return;
     }
+
+    this.selected=[r,c];
+    this.render();
+}
+
 
     setupEventListeners(){
         const b=document.getElementById("board");
@@ -563,39 +577,34 @@ class SnowSim {
     static get(b,r,c){return this.isValid(b,r,c)?b[r][c]:null;}
     static set(b,r,c,v){if(this.isValid(b,r,c))b[r][c]=v;}
 
-canMove(r,c,dr,dc){
-    const v=this.getCell(r,c);
-    if(!v || v==="o" || v==="k" || v==="h" || v==="bs" || v==="bsh") return false;
 
-    let nr=r+dr,nc=c+dc;
-    while(this.isValid(nr,nc)){
-        const t=this.getCell(nr,nc);
-        if(t==="k"||t!=="o"){
-            const sr=nr-dr,sc=nc-dc;
-            return this.isValid(sr,sc)&&this.getCell(sr,sc)==="o"&&!(sr===r&&sc===c);
+
+
+static move(b,r,c,dr,dc){
+    const v = this.get(b,r,c);
+
+    // vain b ja s saavat liikkua (ei bs, bsh, h)
+    if(v!=="b" && v!=="s") return null;
+
+    let nr=r+dr, nc=c+dc;
+    while(this.isValid(b,nr,nc)){
+        const t=this.get(b,nr,nc);
+        if(t==="k" || t!=="o"){
+            nr-=dr; nc-=dc;
+            break;
         }
-        nr+=dr;nc+=dc;
+        nr+=dr; nc+=dc;
     }
-    return false;
+
+    // ei oikeaa liikettä
+    if(nr===r && nc===c) return null;
+
+    const nb=this.clone(b);
+    this.set(nb,r,c,"o");
+    this.set(nb,nr,nc,v);
+    return nb;
 }
 
-
-    static move(b,r,c,dr,dc){
-        if(!this.canMove(b,r,c,dr,dc))return null;
-        let nb=this.clone(b);
-        const v=this.get(nb,r,c);
-
-        let nr=r+dr,nc=c+dc;
-        while(this.isValid(nb,nr,nc)){
-            const t=this.get(nb,nr,nc);
-            if(t==="k"||t!=="o"){nr-=dr;nc-=dc;break;}
-            nr+=dr;nc+=dc;
-        }
-
-        this.set(nb,r,c,"o");
-        this.set(nb,nr,nc,v);
-        return nb;
-    }
 
     static stack(b,fr,fc,tr,tc){
         const A=this.get(b,fr,fc),B=this.get(b,tr,tc);
@@ -703,7 +712,15 @@ SnowProblemGame.prototype.solver=function(){
 SnowProblemGame.prototype.showSolution=function(){
 
     const sol=this.solver();
-    if(!sol||!sol.length)return;
+
+    if(sol===null){
+        this.updateStatus("❌ Ratkaisua ei löydy tälle asetelmalle.");
+        return;
+    }
+    if(!sol.length){
+        this.updateStatus("✅ Kenttä on jo ratkaistu.");
+        return;
+    }
 
     let i=0;
     const step=()=>{
