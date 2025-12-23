@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lumiukko-v3';
+const CACHE_NAME = 'lumiukko-v4';
 const FILES_TO_CACHE = [
   './',
   './index.html',

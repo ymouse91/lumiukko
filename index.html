@@ -55,7 +55,7 @@ h1{
         }
         .cell img{width:85%;height:85%;object-fit:contain;pointer-events:none;}
         .cell.empty{cursor:default;}
-        .cell.tree{background:#2d5016;cursor:default;}
+        .cell.tree{background:#90EE90;cursor:default;}
 
         .cell.selected{border:3px solid #6b6bff;box-shadow:0 0 15px #6b6bff;transform:scale(1.05);}
 
@@ -289,7 +289,7 @@ class SnowProblemGame {
 
     canMove(r,c,dr,dc){
         const v=this.getCell(r,c);
-if(!v || v==="o" || v==="k" || v==="h") return false;
+        if(v!=="b" && v!=="s") return false;   // ✅ bs ja bsh eivät liiku
         let nr=r+dr,nc=c+dc;
         while(this.isValid(nr,nc)){
             const t=this.getCell(nr,nc);
@@ -439,7 +439,8 @@ if(!v || v==="o" || v==="k" || v==="h") return false;
         const cell=e.target.closest(".cell");
         if(!cell)return;
         const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
-        if(v==="o"||v==="k")return;
+        if(v!=="b" && v!=="s") return;  // ✅ bs ja bsh ei lähde edes “vedettäväksi”
+
 
         this.dragStart={r,c,startX:e.clientX,startY:e.clientY,moved:false};
 
@@ -484,7 +485,8 @@ if(!v || v==="o" || v==="k" || v==="h") return false;
         if(!cell)return;
         e.preventDefault();
         const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
-        if(v==="o"||v==="k")return;
+        if(v!=="b" && v!=="s") return;
+
 
         this.dragStart={r,c,startX:e.touches[0].clientX,startY:e.touches[0].clientY,moved:false};
 
