@@ -266,8 +266,12 @@ class SnowProblemGame {
         this.moves=0;
         this.selected=null;
         this.render();
-        this.updateStatus("Pulma nollattu");
+
+        const name = this.currentPuzzleData?.name || "(tuntematon)";
+        const id   = this.currentPuzzleData?.id ?? "";
+        this.updateStatus(`Pulma: ${name} nollattu`);
     }
+
 
     undo(){
         if(!this.history.length)return;
