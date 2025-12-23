@@ -435,96 +435,109 @@ class SnowProblemGame {
         b.addEventListener("touchstart",e=>this.handleTouchStart(e));
     }
 
-    handleMouseDown(e){
-        const cell=e.target.closest(".cell");
-        if(!cell)return;
-        const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
-        if(v!=="b" && v!=="s") return;  // ✅ bs ja bsh ei lähde edes “vedettäväksi”
+handleMouseDown(e){
+    const cell=e.target.closest(".cell");
+    if(!cell)return;
 
+    const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
 
-        this.dragStart={r,c,startX:e.clientX,startY:e.clientY,moved:false};
+    const locked = (v==="bs" || v==="bsh");
+    if(locked && !this.selected) return;   // estä aloitus lukitusta, mutta salli kohde valinnalle
 
-        const move=ev=>{
-            if(!this.dragStart)return;
-            const dx=ev.clientX-this.dragStart.startX;
-            const dy=ev.clientY-this.dragStart.startY;
-            if(Math.abs(dx)>30||Math.abs(dy)>30){
-                this.dragStart.moved=true;
-                let dr=0,dc=0;
-                if(Math.abs(dx)>Math.abs(dy))dc=dx>0?1:-1;
-                else dr=dy>0?1:-1;
-                this.move(this.dragStart.r,this.dragStart.c,dr,dc);
-                this.dragStart=null;
-                document.removeEventListener("mousemove",move);
-                document.removeEventListener("mouseup",up);
-            }
-        };
-        const up=()=>{
-            if(this.dragStart&&!this.dragStart.moved){
-                if(this.selected){
-                    const[sr,sc]=this.selected;
-                    this.selected=null;
-                    this.stack(sr,sc,this.dragStart.r,this.dragStart.c);
-                    this.render();
-                }else{
-                    this.selected=[this.dragStart.r,this.dragStart.c];
-                    this.render();
-                }
-            }
+    if(v==="o"||v==="k")return;
+
+    this.dragStart={r,c,startX:e.clientX,startY:e.clientY,moved:false};
+
+    const move=ev=>{
+        if(!this.dragStart)return;
+        const dx=ev.clientX-this.dragStart.startX;
+        const dy=ev.clientY-this.dragStart.startY;
+        if(Math.abs(dx)>30||Math.abs(dy)>30){
+            this.dragStart.moved=true;
+            let dr=0,dc=0;
+            if(Math.abs(dx)>Math.abs(dy))dc=dx>0?1:-1;
+            else dr=dy>0?1:-1;
+            this.move(this.dragStart.r,this.dragStart.c,dr,dc);
             this.dragStart=null;
             document.removeEventListener("mousemove",move);
             document.removeEventListener("mouseup",up);
-        };
+        }
+    };
 
-        document.addEventListener("mousemove",move);
-        document.addEventListener("mouseup",up);
-    }
-
-    handleTouchStart(e){
-        const cell=e.target.closest(".cell");
-        if(!cell)return;
-        e.preventDefault();
-        const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
-        if(v!=="b" && v!=="s") return;
-
-
-        this.dragStart={r,c,startX:e.touches[0].clientX,startY:e.touches[0].clientY,moved:false};
-
-        const move=ev=>{
-            if(!this.dragStart)return;
-            const dx=ev.touches[0].clientX-this.dragStart.startX;
-            const dy=ev.touches[0].clientY-this.dragStart.startY;
-            if(Math.abs(dx)>30||Math.abs(dy)>30){
-                this.dragStart.moved=true;
-                let dr=0,dc=0;
-                if(Math.abs(dx)>Math.abs(dy))dc=dx>0?1:-1;
-                else dr=dy>0?1:-1;
-                this.move(this.dragStart.r,this.dragStart.c,dr,dc);
-                this.dragStart=null;
-                document.removeEventListener("touchmove",move);
-                document.removeEventListener("touchend",up);
+    const up=()=>{
+        if(this.dragStart&&!this.dragStart.moved){
+            if(this.selected){
+                const[sr,sc]=this.selected;
+                this.selected=null;
+                this.stack(sr,sc,this.dragStart.r,this.dragStart.c);
+                this.render();
+            }else{
+                this.selected=[this.dragStart.r,this.dragStart.c];
+                this.render();
             }
-        };
-        const up=()=>{
-            if(this.dragStart&&!this.dragStart.moved){
-                if(this.selected){
-                    const[sr,sc]=this.selected;
-                    this.selected=null;
-                    this.stack(sr,sc,this.dragStart.r,this.dragStart.c);
-                    this.render();
-                }else{
-                    this.selected=[this.dragStart.r,this.dragStart.c];
-                    this.render();
-                }
-            }
+        }
+        this.dragStart=null;
+        document.removeEventListener("mousemove",move);
+        document.removeEventListener("mouseup",up);
+    };
+
+    document.addEventListener("mousemove",move);
+    document.addEventListener("mouseup",up);
+}
+
+
+handleTouchStart(e){
+    const cell=e.target.closest(".cell");
+    if(!cell)return;
+    e.preventDefault();
+
+    const r=+cell.dataset.r,c=+cell.dataset.c,v=this.getCell(r,c);
+
+    const locked = (v==="bs" || v==="bsh");
+    if(locked && !this.selected) return;   // estä aloitus lukitusta, mutta salli kohde valinnalle
+
+    if(v==="o"||v==="k")return;
+
+    this.dragStart={r,c,startX:e.touches[0].clientX,startY:e.touches[0].clientY,moved:false};
+
+    const move=ev=>{
+        if(!this.dragStart)return;
+        const dx=ev.touches[0].clientX-this.dragStart.startX;
+        const dy=ev.touches[0].clientY-this.dragStart.startY;
+        if(Math.abs(dx)>30||Math.abs(dy)>30){
+            this.dragStart.moved=true;
+            let dr=0,dc=0;
+            if(Math.abs(dx)>Math.abs(dy))dc=dx>0?1:-1;
+            else dr=dy>0?1:-1;
+            this.move(this.dragStart.r,this.dragStart.c,dr,dc);
             this.dragStart=null;
             document.removeEventListener("touchmove",move);
             document.removeEventListener("touchend",up);
-        };
+        }
+    };
 
-        document.addEventListener("touchmove",move,{passive:false});
-        document.addEventListener("touchend",up);
-    }
+    const up=()=>{
+        if(this.dragStart&&!this.dragStart.moved){
+            if(this.selected){
+                const[sr,sc]=this.selected;
+                this.selected=null;
+                this.stack(sr,sc,this.dragStart.r,this.dragStart.c);
+                this.render();
+            }else{
+                this.selected=[this.dragStart.r,this.dragStart.c];
+                this.render();
+            }
+        }
+        this.dragStart=null;
+        document.removeEventListener("touchmove",move);
+        document.removeEventListener("touchend",up);
+    };
+
+    document.addEventListener("touchmove",move,{passive:false});
+    document.addEventListener("touchend",up);
+}
+
+
 
 }
 
@@ -539,21 +552,22 @@ class SnowSim {
     static get(b,r,c){return this.isValid(b,r,c)?b[r][c]:null;}
     static set(b,r,c,v){if(this.isValid(b,r,c))b[r][c]=v;}
 
-    static canMove(b,r,c,dr,dc){
-        const v=this.get(b,r,c);
-        if(v!=="b" && v!=="s") return false;  /* 🔥 vain b ja s liikkuvat */
+canMove(r,c,dr,dc){
+    const v=this.getCell(r,c);
+    if(!v || v==="o" || v==="k" || v==="h" || v==="bs" || v==="bsh") return false;
 
-        let nr=r+dr,nc=c+dc;
-        while(this.isValid(b,nr,nc)){
-            const t=this.get(b,nr,nc);
-            if(t==="k"||t!=="o"){
-                const sr=nr-dr,sc=nc-dc;
-                return this.isValid(b,sr,sc)&&this.get(b,sr,sc)==="o";
-            }
-            nr+=dr;nc+=dc;
+    let nr=r+dr,nc=c+dc;
+    while(this.isValid(nr,nc)){
+        const t=this.getCell(nr,nc);
+        if(t==="k"||t!=="o"){
+            const sr=nr-dr,sc=nc-dc;
+            return this.isValid(sr,sc)&&this.getCell(sr,sc)==="o"&&!(sr===r&&sc===c);
         }
-        return false;
+        nr+=dr;nc+=dc;
     }
+    return false;
+}
+
 
     static move(b,r,c,dr,dc){
         if(!this.canMove(b,r,c,dr,dc))return null;
